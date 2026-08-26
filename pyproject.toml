@@ -1,5 +1,5 @@
 [build-system]
-requires = ['setuptools >= 61.0.0']
+requires = ['setuptools >= 64']   # >=62.3 for recursive (**) package-data globs
 build-backend = 'setuptools.build_meta'
 
 [project]
@@ -122,10 +122,16 @@ linux = "https://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/{version}/freesu
 macOS = "https://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/{version}/freesurfer-macOS-darwin_x86_64-{version}.tar.gz"
 
 # find (auto-discover) so SUBPACKAGES ship - upstream's explicit list omitted
-# FastSurferCNN.utils/.data_loader, making `pip install` import-broken. leansurfer
+# FastSurferCNN.utils/.data_loader, making `pip install` import-broken. fastsurfer-lean
 # ships only FastSurferCNN* (the parcellation CNN); the surface/CC packages are dropped.
 [tool.setuptools.packages.find]
 include = ['FastSurferCNN*']
+
+# Ship the CNN's DATA files (config/checkpoint_paths.yaml, the VINN cfgs, the color
+# LUTs) - `packages` only ships .py, so without this the runtime FileNotFounds on
+# checkpoint_paths.yaml. Recursive ** needs setuptools >= 62.3 (pinned above).
+[tool.setuptools.package-data]
+"*" = ["**/*.yaml", "**/*.yml", "**/*.tsv", "**/*.txt", "**/*.json"]
 
 [tool.pydocstyle]
 convention = 'numpy'
