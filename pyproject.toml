@@ -3,9 +3,9 @@ requires = ['setuptools >= 61.0.0']
 build-backend = 'setuptools.build_meta'
 
 [project]
-name = 'leansurfer'
+name = 'fastsurfer-lean'
 version = '2.6.0-dev0+lean1'
-description = 'leansurfer: FastSurfer VINN whole-brain parcellation CNN, slimmed to the inference path (a fork of Deep-MI/FastSurfer for medseg/nnseg)'
+description = 'fastsurfer-lean: FastSurfer VINN whole-brain parcellation CNN, slimmed to the inference path (a lean fork of Deep-MI/FastSurfer for medseg/nnseg - not a separate product)'
 readme = 'README.md'
 license = {file = 'LICENSE'}
 requires-python = '>=3.10'
