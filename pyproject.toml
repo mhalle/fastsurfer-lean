@@ -48,8 +48,8 @@ dependencies = [
     'requests>=2.31.0',
     'scikit-image>=0.19.3',
     'scipy>=1.10.1,!=1.13.0',
-    'torch==2.7.*',
-    'torchvision>=0.22.1,<0.23',
+    'torch>=2.7', # upstream pins ==2.7.* for CUDA 11; relaxed here so the net can share an environment with newer torch (2026-09-03)
+    'torchvision>=0.22.1',
     'tqdm>=4.65',
     'yacs>=0.1.8',
 ]
