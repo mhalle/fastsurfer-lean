@@ -4,7 +4,7 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'fastsurfer-lean'
-version = '2.5.4+lean1'
+version = '2.5.4+lean2'
 description = 'fastsurfer-lean: FastSurfer VINN whole-brain parcellation CNN, slimmed to the inference path (a lean fork of Deep-MI/FastSurfer for medseg/nnseg - not a separate product)'
 readme = 'README.md'
 license = {file = 'LICENSE'}
@@ -48,8 +48,8 @@ dependencies = [
     'requests>=2.31.0',
     'scikit-image>=0.19.3',
     'scipy>=1.10.1,!=1.13.0',
-    'torch>=2.7', # upstream pins ==2.7.* for CUDA 11; relaxed here so the net can share an environment with newer torch (2026-09-03)
-    'torchvision>=0.22.1',
+    'torch>=2.14.0', # upstream pins ==2.7.* for CUDA 11; here the floor is the latest torch (2026-09-12), which haversack runs the net on
+    'torchvision>=0.29.0', # the release built for torch 2.14.0
     'tqdm>=4.65',
     'yacs>=0.1.8',
 ]
