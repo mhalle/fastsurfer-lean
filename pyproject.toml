@@ -1,11 +1,11 @@
 [build-system]
-requires = ['setuptools >= 61.0.0']
+requires = ['setuptools >= 64']   # >=62.3 for recursive (**) package-data globs
 build-backend = 'setuptools.build_meta'
 
 [project]
-name = 'fastsurfer'
-version = '2.5.4'
-description = 'A fast and accurate deep-learning based neuroimaging pipeline'
+name = 'fastsurfer-lean'
+version = '2.5.4+lean1'
+description = 'fastsurfer-lean: FastSurfer VINN whole-brain parcellation CNN, slimmed to the inference path (a lean fork of Deep-MI/FastSurfer for medseg/nnseg - not a separate product)'
 readme = 'README.md'
 license = {file = 'LICENSE'}
 requires-python = '>=3.10'
@@ -32,35 +32,26 @@ classifiers = [
     'License :: OSI Approved :: Apache Software License',
     'Intended Audience :: Science/Research',
 ]
+# leansurfer: the FastSurferCNN INFERENCE path only. Dropped vs upstream FastSurfer:
+# lapy, meshpy (C build), monai, neuroreg, pyrr, torchio, tensorboard, scikit-learn,
+# simpleitk - all for surface reconstruction / registration / FastSurfer-CC / training,
+# none imported by the whole-brain parcellation CNN. Kept = exactly what
+# FastSurferCNN's conform + VINN get_prediction + label maps import.
 dependencies = [
     'h5py>=3.7',
-    'lapy>=1.5.0',
     'matplotlib>=3.7.1',
-    'meshpy>=2025.1.1', # needed for FastSurfer-CC
-    'monai>=1.4.0', # needed for FastSurfer-CC
-    'neuroreg>=0.6.2', # needed for registration / etiv
-    'nibabel>=5.4.0', # needed to fix a bug in nibabel
+    'nibabel>=5.4.0',
     'numpy>=1.25',
     'packaging',
     'pandas>=1.5.3',
-    'pip>=25.0',
-    'pyrr>=0.10.3', # needed for FastSurfer-CC
     'pyyaml>=6.0',
     'requests>=2.31.0',
     'scikit-image>=0.19.3',
-    'scikit-learn>=1.2.2',
     'scipy>=1.10.1,!=1.13.0',
-    'simpleitk>=2.2.1',
-    'tensorboard>=2.12.1',
-    'torch==2.7.*', # pinned to 2.7, so compatibility to CUDA 11 is ensured for same torch version
-    'torchio>=0.18.83',
-    'torchvision>=0.22.1,<0.23',
+    'torch>=2.7', # upstream pins ==2.7.* for CUDA 11; relaxed here so the net can share an environment with newer torch (2026-09-03)
+    'torchvision>=0.22.1',
     'tqdm>=4.65',
     'yacs>=0.1.8',
-    'monai>=1.4.0',
-    'meshpy>=2025.1.1',
-    'pyrr>=0.10.3',
-    'pip>=25.0',
 ]
 
 [project.optional-dependencies]
@@ -130,8 +121,17 @@ version = "7.4.1"
 linux = "https://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/{version}/freesurfer-linux-ubuntu22_amd64-{version}.tar.gz"
 macOS = "https://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/{version}/freesurfer-macOS-darwin_x86_64-{version}.tar.gz"
 
-[tool.setuptools]
-packages = ['FastSurferCNN','CerebNet','recon_surf','HypVINN']
+# find (auto-discover) so SUBPACKAGES ship - upstream's explicit list omitted
+# FastSurferCNN.utils/.data_loader, making `pip install` import-broken. fastsurfer-lean
+# ships only FastSurferCNN* (the parcellation CNN); the surface/CC packages are dropped.
+[tool.setuptools.packages.find]
+include = ['FastSurferCNN*']
+
+# Ship the CNN's DATA files (config/checkpoint_paths.yaml, the VINN cfgs, the color
+# LUTs) - `packages` only ships .py, so without this the runtime FileNotFounds on
+# checkpoint_paths.yaml. Recursive ** needs setuptools >= 62.3 (pinned above).
+[tool.setuptools.package-data]
+"*" = ["**/*.yaml", "**/*.yml", "**/*.tsv", "**/*.txt", "**/*.json"]
 
 [tool.pydocstyle]
 convention = 'numpy'
