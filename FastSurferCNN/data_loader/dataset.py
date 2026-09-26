@@ -17,7 +17,6 @@ import time
 from collections.abc import Callable, Sequence
 from typing import Optional
 
-import h5py
 import numpy as np
 import numpy.typing as npt
 import torch
@@ -175,6 +174,7 @@ class MultiScaleDataset(Dataset):
 
         # Open file in reading mode
         start = time.time()
+        import h5py  # training data only: not an inference dependency (lean3)
         with h5py.File(dataset_path, "r") as hf:
             for size in cfg.DATA.SIZES:
                 try:
@@ -412,6 +412,7 @@ class MultiScaleDatasetVal(Dataset):
 
         # Open file in reading mode
         start = time.time()
+        import h5py  # training data only: not an inference dependency (lean3)
         with h5py.File(dataset_path, "r") as hf:
             for size in cfg.DATA.SIZES:
                 try:

@@ -24,7 +24,6 @@ import yacs.config
 from numpy import typing as npt
 from pandas import DataFrame
 from torch.utils.data import DataLoader
-from torchvision import transforms
 
 from FastSurferCNN.data_loader.augmentation import ToTensorTest
 from FastSurferCNN.data_loader.data_utils import map_prediction_sagittal2full
@@ -421,7 +420,9 @@ class Inference:
             orig_data,
             orig_zoom,
             self.cfg,
-            transforms=transforms.Compose([ToTensorTest()]),
+            # the one transform itself: Compose([t])(x) is t(x), and torchvision is not an
+            # inference dependency in fastsurfer-lean (lean3)
+            transforms=ToTensorTest(),
         )
 
         test_data_loader = DataLoader(

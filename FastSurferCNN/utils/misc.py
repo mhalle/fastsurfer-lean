@@ -24,7 +24,6 @@ import torch
 import yacs.config
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from skimage import color
-from torchvision import utils
 
 import FastSurferCNN.data_loader.loader
 
@@ -52,6 +51,8 @@ def plot_predictions(
     file_save_name : str
         Name the plot should be saved tp.
     """
+    from torchvision import utils  # training plots only: not an inference dependency (lean3)
+
     f = plt.figure(figsize=(20, 10))
     n, c, h, w = images_batch.shape
     mid_slice = c // 2
