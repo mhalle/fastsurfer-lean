@@ -22,14 +22,16 @@ from typing import cast
 import nibabel as nib
 import numpy as np
 import pandas as pd
-import scipy.ndimage.morphology as morphology
 import torch
 from nibabel.filebasedimages import FileBasedHeader as _Header
 from numpy import typing as npt
+# the functions themselves, not the scipy.ndimage.morphology / .filters namespaces that
+# re-exported them - deprecated, and removed in SciPy 2.0 (lean4, 2026-09-25)
 from scipy.ndimage import (
     binary_closing,
+    binary_dilation,
     binary_erosion,
-    filters,
+    gaussian_filter,
     generate_binary_structure,
     uniform_filter,
 )
@@ -699,7 +701,7 @@ def fill_unknown_labels_per_hemi(
 
     # Get indices of unknown labels, dilate them to get closest surrounding parcels
     unknown = gt == unknown_label
-    unknown = morphology.binary_dilation(unknown, struct1) ^ unknown
+    unknown = binary_dilation(unknown, struct1) ^ unknown
     list_parcels = np.unique(gt[unknown])
 
     # Mask all subcortical structures (fill unknown with closest cortical parcels only)
@@ -709,7 +711,7 @@ def fill_unknown_labels_per_hemi(
     # For each closest parcel, blur label with gaussian filter (spread), append resulting blurred images
     blur_vals = np.ndarray((h, w, d, 0), dtype=float)
     for idx in range(len(list_parcels)):
-        aseg_blur = filters.gaussian_filter(
+        aseg_blur = gaussian_filter(
             1000 * np.asarray(gt == list_parcels[idx], dtype=float), sigma=5
         )
         blur_vals = np.append(blur_vals, np.expand_dims(aseg_blur, axis=3), axis=3)
@@ -835,10 +837,10 @@ def split_cortex_labels(aparc: npt.NDArray) -> np.ndarray:
                     aparc[mask] = label_current + 1000
 
     # Quick Fixes for overlapping classes
-    aseg_lh = filters.gaussian_filter(
+    aseg_lh = gaussian_filter(
         1000 * np.asarray(aparc == 2, dtype=float), sigma=3
     )
-    aseg_rh = filters.gaussian_filter(
+    aseg_rh = gaussian_filter(
         1000 * np.asarray(aparc == 41, dtype=float), sigma=3
     )
 

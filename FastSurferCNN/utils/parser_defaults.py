@@ -32,7 +32,7 @@ from argparse import _ActionsContainer
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import Field, dataclass
 from pathlib import Path
-from typing import Literal, Optional, Protocol, TypeVar, get_args, get_origin
+from typing import Literal, Optional, Protocol, TypeVar, Union, get_args, get_origin
 
 from FastSurferCNN.utils import PLANES, Plane
 from FastSurferCNN.utils.arg_types import VALID_ORIENTATIONS, OrientationType, unquote_str
@@ -96,7 +96,11 @@ def __arg(
         for kw, name in (("dest", "name"), ("default",) * 2):
             default_kwargs.setdefault(kw, getattr(dcf, name))
         if "type" not in default_kwargs:
-            if str(get_origin(dcf.type)) == "typing.Union":
+            # Union[str, None] and str | None alike: the string test matched only the first, so
+            # a PEP 604 optional reached argparse as its `type` - which 3.14's argparse refuses as
+            # not callable ("str | None is not callable"; earlier versions accepted it silently,
+            # and would have called it on a value). lean4, 2026-09-25.
+            if get_origin(dcf.type) in (Union, types.UnionType):
                 _types = list(t for t in get_args(dcf.type) if t is not types.NoneType)
                 if len(_types) == 0:
                     default_kwargs["type"] = None

@@ -4,7 +4,7 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'fastsurfer-lean'
-version = '2.5.4+lean3'
+version = '2.5.4+lean4'
 description = 'fastsurfer-lean: FastSurfer VINN whole-brain parcellation CNN, slimmed to the inference path (a lean fork of Deep-MI/FastSurfer for medseg/nnseg - not a separate product)'
 readme = 'README.md'
 license = {file = 'LICENSE'}
@@ -28,6 +28,7 @@ classifiers = [
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
     'Natural Language :: English',
     'License :: OSI Approved :: Apache Software License',
     'Intended Audience :: Science/Research',
